@@ -38,12 +38,6 @@ class UserRegistrationView(APIView):
                     "message": str(e),
                 }
                 return Response(responseData, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            responseData = {
-                "statuscode": status.HTTP_400_BAD_REQUEST,
-                "message": serializer.errors,
-            }
-            return Response(responseData, status=status.HTTP_400_BAD_REQUEST)
 
 class UserLoginView(APIView):
     permission_classes = [AllowAny]

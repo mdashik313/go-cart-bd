@@ -18,6 +18,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 	def validate(self, attrs):
 		password = attrs.get('password')
 		password2 = attrs.get('password2')
+
+		if User.objects.filter(email=attrs.get('email')).exists():
+			raise serializers.ValidationError(
+				{
+                    "message": "User is already registered in the system",
+					"statuscode": 400,
+				}
+			)
 		if password != password2:
 			raise serializers.ValidationError("Password and Confirm Password doesn't match")
 		return attrs
@@ -29,7 +37,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.ModelSerializer):
 	email = serializers.EmailField(max_length=255)
 	password = serializers.CharField(write_only=True)
-	
+
 	class Meta:
 		model = User
 		fields = ['email', 'password']
