@@ -1,6 +1,11 @@
 from rest_framework import serializers
-from productmanagement.models import Product
+from productmanagement.models import Product, ProductCategory
 
+
+class ProductCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductCategory
+        fields = ["id", "name", "description"]
 
 class AdminValidationMixin:
     def validate(self, attrs):
@@ -18,7 +23,13 @@ class ProductCreateSerializer(AdminValidationMixin, serializers.ModelSerializer)
 
     class Meta:
         model = Product
-        fields = ["name", "description", "price", "stock", "is_active"]
+        fields = ["name", "description", "price", "stock", "is_active", "category"]
+        # Making fields required
+        extra_kwargs = {
+            'name': {'required': True, 'allow_blank': False},
+            'description': {'required': True},
+            'price': {'required': True}
+        }
 
     def validate_price(self, value):
         if value <= 0:
@@ -58,6 +69,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
             "is_active",
             "created_by",
             "created_at",
+            "category",
         ]
 
 

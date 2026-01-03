@@ -5,11 +5,12 @@ from rest_framework.response import Response
 from rest_framework import status
 import traceback
 
-from productmanagement.models import Product
+from productmanagement.models import Product, ProductCategory
 from productmanagement.serializers import (
     ProductCreateSerializer,
     ProductUpdateSerializer,
     ProductDetailSerializer,
+    ProductCategorySerializer,
 )
 
 class IsAdminUserCustom(BasePermission):
@@ -128,119 +129,38 @@ class ProductListView(APIView):
         return Response(responseData, status=status.HTTP_200_OK)
 
 
-# class ProductCreateView(APIView):
-#     permission_classes = [IsAuthenticated]
+class CategoryCreateView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUserCustom]
 
-#     def post(self, request):
-#         serializer = ProductCreateSerializer(
-#             data=request.data,
-#             context={"request": request}
-#         )
-#         if serializer.is_valid(raise_exception=True):
-#             try:
-#                 product = serializer.save()
-#                 return Response(
-#                     {
-#                         "statuscode": status.HTTP_201_CREATED,
-#                         "message": "Product created successfully",
-#                         "data": ProductDetailSerializer(product).data,
-#                     },
-#                     status=status.HTTP_201_CREATED,
-#                 )
-#             except Exception as e:
-#                 traceback.print_exc()
-#                 return Response(
-#                     {
-#                         "statuscode": status.HTTP_400_BAD_REQUEST,
-#                         "message": str(e),
-#                     },
-#                     status=status.HTTP_400_BAD_REQUEST,
-#                 )
+    def post(self, request):
+        serializer = ProductCategorySerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            try:
+                category = serializer.save()
+                responseData = {
+                    "statuscode": status.HTTP_201_CREATED,
+                    "message": "Category created successfully",
+                    "data": ProductCategorySerializer(category).data,
+                }
+                return Response(responseData, status=status.HTTP_201_CREATED)
+            
+            except Exception as e:
+                traceback.print_exc()
+                return Response(
+                    {"statuscode": 400, "message": str(e)},
+                    status=400,
+                )
 
 
-# class ProductUpdateView(APIView):
-#     permission_classes = [IsAuthenticated]
+class CategoryListView(APIView):
+    permission_classes = [AllowAny]
 
-#     def put(self, request, pk):
-#         try:
-#             product = Product.objects.get(pk=pk)
-#         except Product.DoesNotExist:
-#             return Response(
-#                 {"message": "Product not found", "statuscode": 404},
-#                 status=status.HTTP_404_NOT_FOUND,
-#             )
-
-#         serializer = ProductUpdateSerializer(
-#             product,
-#             data=request.data,
-#             partial=True,
-#             context={"request": request},
-#         )
-#         if serializer.is_valid(raise_exception=True):
-#             try:
-#                 serializer.save()
-#                 return Response(
-#                     {
-#                         "statuscode": 200,
-#                         "message": "Product updated successfully",
-#                         "data": ProductDetailSerializer(product).data,
-#                     }
-#                 )
-#             except Exception as e:
-#                 traceback.print_exc()
-#                 return Response(
-#                     {"statuscode": 400, "message": str(e)},
-#                     status=status.HTTP_400_BAD_REQUEST,
-#                 )
-
-# class ProductDeleteView(APIView):
-#     permission_classes = [IsAuthenticated, IsAdminUserCustom]
-
-#     def delete(self, request, pk):
-#         try:
-#             product = Product.objects.get(pk=pk)
-#             product.delete()
-#             return Response(
-#                 {"statuscode": 204, "message": "Product deleted successfully"},
-#                 status=204,
-#             )
-#         except Product.DoesNotExist:
-#             return Response(
-#                 {"statuscode": 404, "message": "Product not found"},
-#                 status=404,
-#             )
-
-
-# class ProductDetailView(APIView):
-#     permission_classes = [AllowAny]
-
-#     def get(self, request, pk):
-#         try:
-#             product = Product.objects.get(pk=pk, is_active=True)
-#             return Response(
-#                 {
-#                     "statuscode": 200,
-#                     "data": ProductDetailSerializer(product).data,
-#                 }
-#             )
-#         except Product.DoesNotExist:
-#             return Response(
-#                 {"message": "Product not found", "statuscode": 404},
-#                 status=status.HTTP_404_NOT_FOUND,
-#             )
-        
-# class ProductListView(APIView):
-#     permission_classes = [AllowAny]
-
-#     def get(self, request):
-#         products = Product.objects.filter(is_active=True)
-#         serializer = ProductDetailSerializer(products, many=True)
-#         return Response(
-#             {
-#                 "statuscode": 200,
-#                 "data": serializer.data,
-#             }
-#         )
-
-
-
+    def get(self, request):
+        categories = ProductCategory.objects.filter(is_active=True)
+        return Response(
+            {
+                "statuscode": 200,
+                "data": ProductCategorySerializer(categories, many=True).data,
+            },
+            status=200,
+        )
