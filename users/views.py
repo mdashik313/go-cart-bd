@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from carts.services import merge_guest_cart_into_user_cart, serialize_cart
 from core.response import error_response, success_response
 
 from .models import Address
@@ -26,9 +27,21 @@ class RegisterView(APIView):
             return error_response("Validation failed.", serializer.errors)
 
         user = serializer.save()
+        refresh = RefreshToken.for_user(user)
+
+        cart, adjustments = merge_guest_cart_into_user_cart(request.headers.get("X-Cart-Token"), user)
+        cart_data = serialize_cart(cart)
+        if adjustments:
+            cart_data["merge_adjustments"] = adjustments
+
         return success_response(
             "Account created successfully.",
-            UserSerializer(user).data,
+            {
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": UserSerializer(user).data,
+                "cart": cart_data,
+            },
             status.HTTP_201_CREATED,
         )
 
@@ -44,10 +57,16 @@ class LoginView(APIView):
         user = serializer.validated_data["user"]
         refresh = RefreshToken.for_user(user)
 
+        cart, adjustments = merge_guest_cart_into_user_cart(request.headers.get("X-Cart-Token"), user)
+        cart_data = serialize_cart(cart)
+        if adjustments:
+            cart_data["merge_adjustments"] = adjustments
+
         return success_response("Login successful.", {
             "access": str(refresh.access_token),
             "refresh": str(refresh),
             "user": UserSerializer(user).data,
+            "cart": cart_data,
         })
 
 
