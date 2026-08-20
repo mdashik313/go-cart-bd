@@ -14,3 +14,10 @@ class PaymentAdmin(admin.ModelAdmin):
     list_filter = ["status", "payment_method", "provider"]
     search_fields = ["transaction_id", "provider_transaction_id", "order__order_number"]
     inlines = [RefundInline]
+
+
+@admin.register(Refund)
+class RefundAdmin(admin.ModelAdmin):
+    list_display = ["payment", "amount", "status", "created_at"]
+    list_filter = ["status"]
+    search_fields = ["payment__transaction_id", "provider_refund_id"]
