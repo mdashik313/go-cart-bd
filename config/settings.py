@@ -39,6 +39,7 @@ LOCAL_APPS = [
     "products",
     "carts",
     "orders",
+    "payments",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -138,3 +139,8 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
 CORS_ALLOW_HEADERS = list(default_headers) + ["x-cart-token"]
+
+# Payment provider 
+PAYMENT_WEBHOOK_SECRET = env("PAYMENT_WEBHOOK_SECRET", default="dev-webhook-secret")
+PAYMENT_API_KEY = env("PAYMENT_API_KEY", default="")
+PAYMENT_SECRET_KEY = env("PAYMENT_SECRET_KEY", default="")

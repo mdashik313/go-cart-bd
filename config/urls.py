@@ -13,6 +13,7 @@ from products.urls import (
 )
 from carts.urls import urlpatterns as cart_urlpatterns
 from orders.urls import admin_urlpatterns, checkout_urlpatterns, customer_urlpatterns
+from payments.urls import admin_urlpatterns as payment_admin_urlpatterns, webhook_urlpatterns
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -25,4 +26,6 @@ urlpatterns = [
     path("api/checkout/", include((checkout_urlpatterns, "checkout"))),
     path("api/orders/", include((customer_urlpatterns, "orders"))),
     path("api/admin/orders/", include((admin_urlpatterns, "admin-orders"))),
+    path("api/payments/", include((webhook_urlpatterns, "payments"))),
+    path("api/admin/payments/", include((payment_admin_urlpatterns, "admin-payments"))),
 ]

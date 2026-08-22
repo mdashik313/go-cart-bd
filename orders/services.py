@@ -4,6 +4,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from carts.models import Cart
+from payments.services import refund_for_cancelled_order
 from products.models import InventoryTransaction, Product, ProductVariant
 from users.models import Address
 
@@ -191,6 +192,13 @@ def cancel_order(order):
 
     order.status = "CANCELLED"
     order.save(update_fields=["status", "updated_at"])
+
+    if order.payment_status == "PAID":
+        refund = refund_for_cancelled_order(order)
+        if refund:
+            order.payment_status = refund.payment.status
+            order.save(update_fields=["payment_status", "updated_at"])
+            
     return order, True
 
 
