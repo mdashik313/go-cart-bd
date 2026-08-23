@@ -63,7 +63,7 @@ def verify_webhook_signature(request):
     Demo for a real gateway's signature check
     """
     secret = request.headers.get("X-Webhook-Secret")
-    return bool(secret) and secret == settings.PAYMENT_WEBHOOK_SECRET
+    return bool(secret) and secret == settings.PAYMENT_WEBHOOK_SECRET  # check if secret existn and matches the original
 
 
 @transaction.atomic
@@ -169,7 +169,7 @@ def refund_for_cancelled_order(order):
 
 
 def settle_cod_on_delivery(order):
-    """Called from the admin order-status view when an order is marked DELIVERED."""
+    """triggers when an order is marked DELIVERED."""
     if order.payment_status == "PAID":
         return
 
