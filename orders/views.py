@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from core.pagination import DefaultPagination
 from core.permissions import IsStaffUser
 from core.response import error_response, success_response
+from payments.services import settle_cod_on_delivery
 
 from .models import ORDER_STATUS_CHOICES, Order
 from .serializers import OrderDetailSerializer, OrderListSerializer
@@ -150,6 +151,9 @@ class AdminOrderStatusView(APIView):
                 order, _ = cancel_order(order)
             else:
                 order = update_order_status(order, new_status)
+                if new_status == "DELIVERED":
+                    settle_cod_on_delivery(order)
+                    order.refresh_from_db()
         except CheckoutError as exc:
             return error_response(exc.message)
 
