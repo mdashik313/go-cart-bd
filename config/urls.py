@@ -4,6 +4,8 @@ Project-level URL configuration
 
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls.static import static
+from django.conf import settings
 
 from users.urls import address_urlpatterns, auth_urlpatterns
 from products.urls import (
@@ -29,3 +31,7 @@ urlpatterns = [
     path("api/payments/", include((webhook_urlpatterns, "payments"))),
     path("api/admin/payments/", include((payment_admin_urlpatterns, "admin-payments"))),
 ]
+
+urlpatterns += static(
+    settings.MEDIA_URL, document_root=settings.MEDIA_ROOT,
+)
