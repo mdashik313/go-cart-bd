@@ -203,6 +203,22 @@ class ProductImageUploadView(APIView):
             status.HTTP_201_CREATED,
         )
 
+    def delete(self, request, slug, image_id):
+        product = get_object_or_404(Product, slug=slug)
+
+        product_image = get_object_or_404(
+            ProductImage,
+            id=image_id,
+            product=product,
+        )
+
+        product_image.delete()
+
+        return success_response(
+            "Image deleted successfully.",
+            status_code=status.HTTP_200_OK,
+        )
+
 
 class FeaturedProductsView(APIView):
     permission_classes = [AllowAny]

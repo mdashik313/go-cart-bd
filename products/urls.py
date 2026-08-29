@@ -14,6 +14,7 @@ product_urlpatterns = [
     path("featured/", views.FeaturedProductsView.as_view(), name="product-featured"),
     path("<slug:slug>/", views.ProductDetailView.as_view(), name="product-detail"),
     path("<slug:slug>/images/", views.ProductImageUploadView.as_view(), name="product-image-upload"),
+    path("<slug:slug>/images/<int:image_id>/", views.ProductImageUploadView.as_view(), name="product-image-delete"),
 ]
 
 inventory_urlpatterns = [
