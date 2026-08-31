@@ -22,7 +22,10 @@ services:
         container_name: ecom-backend
        
         command: >
-            python manage.py runserver 0.0.0.0:8000
+            gunicorn --bind 0.0.0.0:8000 config.wsgi
+
+        # command: >
+        #     python manage.py runserver 0.0.0.0:8000
         volumes:
             - .:/app
             - ./media:/app/media
