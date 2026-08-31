@@ -22,7 +22,7 @@ services:
         container_name: ecom-backend
        
         command: >
-            gunicorn --bind 0.0.0.0:8000 config.wsgi
+            gunicorn --bind 0.0.0.0:8000 config.wsgi:application
 
         # command: >
         #     python manage.py runserver 0.0.0.0:8000
